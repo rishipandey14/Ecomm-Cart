@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () =>{
         {id: 5, name: "Product 5", price: 23.99},
     ];
 
-    const cart = []
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];  // load card from local storage
 
     const productList = document.getElementById("product-list");
     const cartItems = document.getElementById("cart-items");
@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () =>{
     const totalPriceDisplay = document.getElementById("total-price");
     const checkOutBtn = document.getElementById("checkout-btn");
 
+    // display products
     products.forEach(product =>{
         const productDiv = document.createElement("div")
         productDiv.classList.add("product")
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () =>{
         productList.appendChild(productDiv); 
     });
 
-
+    // add product to cart when button is clicked
     productList.addEventListener('click', (e) =>{
         if(e.target.tagName === "BUTTON") {
             const productId = parseInt(e.target.getAttribute('data-id'));
@@ -35,9 +36,15 @@ document.addEventListener('DOMContentLoaded', () =>{
         } 
     });
 
+    // add product in cart
     function addToCart(product){
         cart.push(product);
+        updateLocalStorage();
         renderCart();
+    }
+
+    function updateLocalStorage(){
+        localStorage.setItem("cart", JSON.stringify(cart));  // save cart to local storage
     }
 
     function renderCart() {
@@ -56,17 +63,23 @@ document.addEventListener('DOMContentLoaded', () =>{
                 `;
 
                 cartItems.appendChild(cartItem);
-                totalPriceDisplay.textContent = `${totalPrice.toFixed(2)}`
+                
             });
+            totalPriceDisplay.textContent = `${totalPrice.toFixed(2)}`
         }else {
             emptyCartMessage.classList.remove("hidden");
+            cartTotalMessage.classList.add("hidden");
             totalPriceDisplay.textContent = `$0.00`
         }
     }
 
     checkOutBtn.addEventListener('click', () => {
-        cart.length = 0;
+        cart = []; // empty cart
+        updateLocalStorage();
         alert("Checked out successfully")
         renderCart();
-    })
+    });
+
+    renderCart();
+
 });
